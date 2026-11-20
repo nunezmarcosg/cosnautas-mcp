@@ -1,0 +1,4 @@
+# Lista blanca: al contexto de build solo entran el código y el lockfile.
+*
+!server.py
+!requirements.lock
