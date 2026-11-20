@@ -64,14 +64,18 @@ RESOURCES: dict[str, tuple[str, str | None]] = {
 CRITERIOS = {"SIMPLE", "STARTS", "CONTAINS", "T_ES", "T_EN", "ALL", "TERM_EN"}
 
 INSTRUCTIONS = (
-    "Consulta los diccionarios médicos de Cosnautas (suscripción personal, una consulta cada vez). "
-    "Flujo: 1) cosnautas_search(term, resource) devuelve entradas con un `ref`; "
-    "2) cosnautas_get_entry(ref) devuelve el texto completo de la entrada. "
-    "Recursos: libro (Libro Rojo EN→ES, el principal), dic (investigación clínica), siglas "
-    "(siglas médicas en español), covid, dps (dudas y dificultades portugués), dtq (términos químicos), "
-    "alergologia. La cuenta admite UNA sola conexión: si la dueña está usando cosnautas.com en su "
-    "navegador, las consultas fallarán con un error de límite de conexiones; en ese caso no reintentes "
-    "en bucle, informa al usuario. cosnautas_logout libera la conexión."
+    "USO OBLIGATORIO: ante CUALQUIER pregunta sobre traducción, equivalencia o significado de un "
+    "término médico o científico (inglés↔español), consulta SIEMPRE Cosnautas ANTES de responder, "
+    "aunque creas saber la respuesta: el usuario es traductor médico profesional y necesita el "
+    "criterio del Libro Rojo (Fernando A. Navarro), no la traducción genérica del modelo. "
+    "Flujo: 1) cosnautas_search(term, resource); 2) cosnautas_get_entry(ref) para el texto completo; "
+    "3) responde citando lo que dice la entrada, señalando si difiere de tu criterio propio. "
+    "Recursos: libro (Libro Rojo EN→ES, el principal y el predeterminado), dic (investigación "
+    "clínica), siglas (siglas médicas en español), covid, dps (dudas portugués), dtq (términos "
+    "químicos), alergologia. "
+    "La cuenta admite UNA sola conexión: si la dueña está usando cosnautas.com en su navegador, las "
+    "consultas fallan con error de límite de conexiones; no reintentes en bucle, informa al usuario. "
+    "cosnautas_logout libera la conexión."
 )
 
 mcp = MCPServer("cosnautas", instructions=INSTRUCTIONS, log_level="WARNING")
@@ -408,9 +412,9 @@ async def _search_one(term: str, resource: str, criterio: str | None) -> list[di
 
 @mcp.tool(annotations=ToolAnnotations(read_only_hint=True, open_world_hint=True))
 async def cosnautas_search(term: str, resource: str = "libro", criterio: str | None = None) -> dict:
-    """Busca un término en un recurso de Cosnautas y devuelve las entradas que coinciden.
-
-    Usa esta herramienta cuando necesites traducir o entender un término médico (EN↔ES).
+    """Busca un término en los diccionarios médicos de Cosnautas. ÚSALA SIEMPRE, como primer paso
+    obligatorio, ante cualquier duda de traducción o terminología médica/científica EN↔ES (también
+    siglas, covid, portugués o química), antes de responder con tu propio criterio.
     resource: libro (Libro Rojo), dic, siglas, covid, dps, dtq, alergologia, o "all" (todos).
     criterio (opcional): SIMPLE, STARTS, CONTAINS, T_ES, T_EN, TERM_EN, ALL. Sin criterio se usa
     la búsqueda rápida, que devuelve solo las primeras coincidencias.
